@@ -7,6 +7,7 @@ pipeline {
             }
         }
         stage('learning') {
+            agent { label'JDK11MVN' }
             steps{
                 git url: 'https://github.com/muthyalasaikiran/game-of-life.git',
                     branch: 'master'
