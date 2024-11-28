@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+    options {
+        timeout(time: 30, unit: 'MINUTES') 
+    }
+    triggers {
+        pollSCM('H */5 * * 1-5') 
+    }
+    stages {
+        stage('Git Cloning') {
+            steps {
+                git url: 'https://github.com/muthyalasaikiran/game-of-life.git', branch: 'master'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh 'openjdk-8-jdk'
+            }
+        }
+        stage('Build Application') {
+            steps {
+                sh 'mvn clean install'
+                sh 'npm run build'
+            }
+        }
+        stage('Test Application') {
+            steps {
+                sh 'mvn package'
+            }
+        }
+    }
+    post {
+        success {
+            mail to: 'g9477715@gmail.com',
+                 subject: 'Build Successful',
+                 body: 'The build was successful.'
+        }
+        failure {
+            mail to: 'g9477715@gmail.com',
+                 subject: 'Build Failed',
+                 body: 'The build has failed.'
+        }
+    }
+}
